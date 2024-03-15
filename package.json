@@ -50,6 +50,7 @@
     "vite": "^5.0.12"
   },
   "dependencies": {
+    "@adonisjs/ally": "^5.0.2",
     "@adonisjs/auth": "^9.1.1",
     "@adonisjs/core": "^6.2.2",
     "@adonisjs/lucid": "^20.1.0",
@@ -60,6 +61,7 @@
     "@vinejs/vine": "^1.7.1",
     "better-sqlite3": "^9.4.3",
     "bootstrap": "^5.3.3",
+    "bootstrap-icons": "^1.11.3",
     "edge.js": "^6.0.1",
     "jdenticon": "^3.2.0",
     "luxon": "^3.4.4",
