@@ -59,4 +59,62 @@ export default class SocialController {
       response.redirect().toRoute('home')
     }
   }
+
+  googleRedirect({ ally }: HttpContext) {
+    ally.use('google').redirect((req) => {
+      req.scopes(['userinfo.email'])
+      req.param('redirect_uri', '/google/callback')
+    })
+  }
+
+  async googleCallback({ ally, response, session, auth }: HttpContext) {
+    const gg = ally.use('google')
+
+    /**
+     * User has denied access by canceling
+     * the login flow
+     */
+    if (gg.accessDenied()) {
+      session.flash('success', "Tu as annulé l'autorisation d'accès")
+      return response.redirect().toRoute('auth.login')
+    }
+    /**
+     * OAuth state verification failed. This happens when the
+     * CSRF cookie gets expired.
+     */
+    if (gg.stateMisMatch()) {
+      session.flash(
+        'success',
+        'Nous ne sommes pas en mesure de vérifier la demande. Veuillez réessayer'
+      )
+      return response.redirect().toRoute('auth.login')
+    }
+
+    /**
+     * Google responded with some error
+     */
+    if (gg.hasError()) {
+      session.flash('success', "erreur d'accès")
+      return response.redirect().toRoute('auth.login')
+    }
+
+    /**
+     * Access user info
+     */
+    const googleUser = await gg.user()
+    const user = await User.findBy('email', googleUser.email)
+    if (!user) {
+      const newUser = await User.create({
+        username: googleUser.name,
+        email: googleUser.email,
+        thumbnail: googleUser.avatarUrl,
+      })
+
+      auth.use('web').login(newUser)
+    } else {
+      auth.use('web').login(user)
+      session.flash('success', 'Connecter avec Github')
+      response.redirect().toRoute('home')
+    }
+  }
 }

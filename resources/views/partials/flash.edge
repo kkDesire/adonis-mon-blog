@@ -4,6 +4,12 @@
   </div>
 @end
 
+@if(flashMessages.has('error'))
+  <div class="alert alert-danger">
+    {{old('error')}}
+  </div>
+@end
+
 @error('E_INVALID_CREDENTIALS')
   <div class="alert alert-danger">
     {{$message}}
